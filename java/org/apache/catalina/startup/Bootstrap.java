@@ -140,7 +140,9 @@ public final class Bootstrap {
 
     // -------------------------------------------------------- Private Methods
 
-
+    /**
+     * 初始化类加载器,commonLoader，catalinaLoader(server),sharedLoader
+     */
     private void initClassLoaders() {
         try {
             commonLoader = createClassLoader("common", null);
@@ -255,9 +257,10 @@ public final class Bootstrap {
     public void init() throws Exception {
 
         initClassLoaders();
-
+        //设置线程的 上下文类加载器 catalinaLoader
         Thread.currentThread().setContextClassLoader(catalinaLoader);
 
+        //静态类，用于在使用java SecurityManager时预加载java类，以便defineClassInPackage运行时权限不会触发AccessControlException
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
@@ -277,7 +280,7 @@ public final class Bootstrap {
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
-
+        //守护线程
         catalinaDaemon = startupInstance;
 
     }
@@ -420,6 +423,7 @@ public final class Bootstrap {
         paramTypes[0] = Boolean.TYPE;
         Object paramValues[] = new Object[1];
         paramValues[0] = Boolean.valueOf(await);
+        //通过反射调用setAwait
         Method method =
             catalinaDaemon.getClass().getMethod("setAwait", paramTypes);
         method.invoke(catalinaDaemon, paramValues);
@@ -458,7 +462,7 @@ public final class Bootstrap {
 
         if (daemon == null) {
             // Don't set daemon until init() has completed
-            Bootstrap bootstrap = new Bootstrap();
+            Bootstrap bootstrap = new Bootstrap();//设置Globals.CATALINA_HOME_PROP
             try {
                 bootstrap.init();
             } catch (Throwable t) {
@@ -488,6 +492,7 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+                //设置标志 catalinaDaemon -> Catalina.java
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();
