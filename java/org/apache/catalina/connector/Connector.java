@@ -960,13 +960,29 @@ public class Connector extends LifecycleMBeanBase  {
     }
 
 
+    /**
+     * 初始化连接器
+     * @throws LifecycleException
+     */
     @Override
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
 
         // Initialize adapter
+        /*
+         * 使用适配器模式 负责将Tomcat Request 转成 ServletRequest
+         */
         adapter = new CoyoteAdapter(this);
+
+        /*
+         * 处理网络协议和应用层协议 包括两个组件
+         * EndPoint:实现TCP/IP 协议
+         *          Accept:监听socket连接
+         *          SocketProcessor:处理接收的Socket请求，被提交到Executor 线程池执行
+         * Processor:HTTP协议,接收来自 EndPoint 的Socket，读取字节流解析成Tomcat Request 和 Response
+         *      并通过Adapter将其提交到容器处理，Processor是对应用层协议的抽象
+         */
         protocolHandler.setAdapter(adapter);
 
         // Make sure parseBodyMethodsSet has a default

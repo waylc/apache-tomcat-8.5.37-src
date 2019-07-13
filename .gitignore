@@ -43,3 +43,5 @@ modules/jdbc-pool/includes
 webapps/docs/jdbc-pool.xml
 test/webresources/*
 catalina-home/webapps/*
+target/
+catalina-home/temp/

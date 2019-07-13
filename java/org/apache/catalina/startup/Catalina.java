@@ -526,6 +526,7 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 加载  server.xml 文件
      */
     public void load() {
 
@@ -541,7 +542,7 @@ public class Catalina {
         // Before digester - it may be needed
         initNaming();
 
-        // Create and execute our Digester
+        // Create and execute our Digester 解析server.xml
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -672,7 +673,7 @@ public class Catalina {
     public void start() {
 
         if (getServer() == null) {
-            load();//获取Server组件
+            load();//加载 server.xml 获取Server组件
         }
 
         if (getServer() == null) {

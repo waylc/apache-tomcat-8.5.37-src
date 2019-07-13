@@ -142,15 +142,22 @@ public final class Bootstrap {
 
     /**
      * 初始化类加载器,commonLoader，catalinaLoader(server),sharedLoader
+     * 现在根据 conf/catalina.conf 中的
+     *          common.loader=
+     *          server.loader=
+     *          shared.loader=
      */
     private void initClassLoaders() {
         try {
+            //加载 /common/* 可以被Tomcat与所有的Web应用共享的类库都在里面
             commonLoader = createClassLoader("common", null);
             if( commonLoader == null ) {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader=this.getClass().getClassLoader();
             }
+            // 加载 /server/* 只能被Tomcat使用的类库
             catalinaLoader = createClassLoader("server", commonLoader);
+            // 加载 /shared/* 可以被所有web程序共享的类库 对Tomcat不可见
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
             handleThrowable(t);
@@ -351,7 +358,7 @@ public final class Bootstrap {
     public void start()
         throws Exception {
         if( catalinaDaemon==null ) init();
-
+        //反射实例化 Catalina
         Method method = catalinaDaemon.getClass().getMethod("start", (Class [] )null);
         method.invoke(catalinaDaemon, (Object [])null);
 

@@ -128,6 +128,9 @@ public abstract class AbstractEndpoint<S> {
         UNBOUND, BOUND_ON_INIT, BOUND_ON_START, SOCKET_CLOSED_ON_STOP
     }
 
+    /**
+     * 用于监听Socket连接请求
+     */
     public abstract static class Acceptor implements Runnable {
         public enum AcceptorState {
             NEW, RUNNING, PAUSED, ENDED
@@ -1084,6 +1087,7 @@ public abstract class AbstractEndpoint<S> {
 
     public void init() throws Exception {
         if (bindOnInit) {
+            //监听端口
             bind();
             bindState = BindState.BOUND_ON_INIT;
         }
@@ -1154,7 +1158,10 @@ public abstract class AbstractEndpoint<S> {
         }
     }
 
-
+    /**
+     * 启动 NIO
+     * @throws Exception
+     */
     public final void start() throws Exception {
         if (bindState == BindState.UNBOUND) {
             bind();
@@ -1163,7 +1170,11 @@ public abstract class AbstractEndpoint<S> {
         startInternal();
     }
 
+    /**
+     * 启动线程数
+     */
     protected final void startAcceptorThreads() {
+        // count = 1
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];
 

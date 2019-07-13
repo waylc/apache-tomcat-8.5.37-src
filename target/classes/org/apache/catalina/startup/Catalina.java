@@ -526,22 +526,23 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 加载  server.xml 文件
      */
     public void load() {
 
-        if (loaded) {
+        if (loaded) {//防止重复加载
             return;
         }
         loaded = true;
 
         long t1 = System.nanoTime();
 
-        initDirs();
+        initDirs();//初始化目录
 
         // Before digester - it may be needed
         initNaming();
 
-        // Create and execute our Digester
+        // Create and execute our Digester 解析server.xml
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -672,7 +673,7 @@ public class Catalina {
     public void start() {
 
         if (getServer() == null) {
-            load();
+            load();//加载 server.xml 获取Server组件
         }
 
         if (getServer() == null) {
@@ -701,6 +702,7 @@ public class Catalina {
         }
 
         // Register shutdown hook
+        //注册shutdown hook ,平滑退出应用
         if (useShutdownHook) {
             if (shutdownHook == null) {
                 shutdownHook = new CatalinaShutdownHook();

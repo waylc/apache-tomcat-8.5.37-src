@@ -137,6 +137,7 @@ public abstract class LifecycleBase implements Lifecycle {
         }
 
         if (state.equals(LifecycleState.NEW)) {
+            //初始化各个组件
             init();
         } else if (state.equals(LifecycleState.FAILED)) {
             stop();

@@ -822,6 +822,8 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     /**
      * Invoke a pre-startup initialization. This is used to allow connectors
      * to bind to restricted ports under Unix operating environments.
+     *
+     * 初始化 service
      */
     @Override
     protected void initInternal() throws LifecycleException {

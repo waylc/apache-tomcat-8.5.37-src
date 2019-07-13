@@ -253,9 +253,12 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     public void startInternal() throws Exception {
 
         if (!running) {
+            //启动状态
             running = true;
+            //终止的状态
             paused = false;
 
+            // size=128,limit=500,index=-1,stack=null
             processorCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getProcessorCache());
             eventCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
@@ -267,19 +270,19 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             if ( getExecutor() == null ) {
                 createExecutor();
             }
-
+            //连接限制
             initializeConnectionLatch();
 
-            // Start poller threads
+            // Start poller threads 轮询器启动线程 长度是2
             pollers = new Poller[getPollerThreadCount()];
             for (int i=0; i<pollers.length; i++) {
-                pollers[i] = new Poller();
+                pollers[i] = new Poller();//这里会有多个 selector
                 Thread pollerThread = new Thread(pollers[i], getName() + "-ClientPoller-"+i);
                 pollerThread.setPriority(threadPriority);
                 pollerThread.setDaemon(true);
-                pollerThread.start();
+                pollerThread.start();//启动socket处理现场
             }
-
+            //启动接收socket线程
             startAcceptorThreads();
         }
     }
@@ -444,7 +447,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     // --------------------------------------------------- Acceptor Inner Class
     /**
      * The background thread that listens for incoming TCP/IP connections and
-     * hands them off to an appropriate processor.
+     * hands them off to an appropriate processor(处理器).
      */
     /**
      * 接受客户端请求
@@ -481,7 +484,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     SocketChannel socket = null;
                     try {
                         // Accept the next incoming connection from the server
-                        // socket
+                        // socket 等待连接
                         socket = serverSock.accept();
                     } catch (IOException ioe) {
                         // We didn't get a socket
@@ -640,6 +643,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     }
 
     /**
+     * 轮询器
      * Poller class.
      */
     public class Poller implements Runnable {
@@ -860,6 +864,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         iterator.remove();
                     } else {
                         iterator.remove();
+                        // 去生成 SocketProcessor
                         processKey(sk, attachment);
                     }
                 }//while
@@ -871,6 +876,11 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             getStopLatch().countDown();
         }
 
+        /**
+         * 生成 SocketProcessor
+         * @param sk
+         * @param attachment
+         */
         protected void processKey(SelectionKey sk, NioSocketWrapper attachment) {
             try {
                 if ( close ) {
@@ -884,11 +894,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             boolean closeSocket = false;
                             // Read goes before write
                             if (sk.isReadable()) {
+                                //生成 SocketProcessor
                                 if (!processSocket(attachment, SocketEvent.OPEN_READ, true)) {
                                     closeSocket = true;
                                 }
                             }
                             if (!closeSocket && sk.isWritable()) {
+                                //生成 SocketProcessor
                                 if (!processSocket(attachment, SocketEvent.OPEN_WRITE, true)) {
                                     closeSocket = true;
                                 }
@@ -1446,6 +1458,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     // ---------------------------------------------- SocketProcessor Inner Class
 
     /**
+     * 处理接收到socket 请求
      * This class is the equivalent of the Worker, but will simply use in an
      * external Executor thread pool.
      */
@@ -1495,6 +1508,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 if (handshake == 0) {
                     SocketState state = SocketState.OPEN;
                     // Process the request from this socket
+                    // 处理请求
                     if (event == null) {
                         state = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
                     } else {

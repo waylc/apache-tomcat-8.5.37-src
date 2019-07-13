@@ -577,11 +577,14 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         String endpointName = getName();
         endpoint.setName(endpointName.substring(1, endpointName.length()-1));
         endpoint.setDomain(domain);
-
+        //初始化 Endpoint
         endpoint.init();
     }
 
-
+    /**
+     * 启动
+     * @throws Exception
+     */
     @Override
     public void start() throws Exception {
         if (getLog().isInfoEnabled()) {
@@ -794,7 +797,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                     processor = getProtocol().createProcessor();
                     register(processor);
                 }
-
+                //设置 ssl支持
                 processor.setSslSupport(
                         wrapper.getSslSupport(getProtocol().getClientCertProvider()));
 

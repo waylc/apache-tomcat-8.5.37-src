@@ -42,6 +42,10 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
 
+/**
+ * http1.1 协议
+ * @param <S>
+ */
 public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     protected static final StringManager sm =
@@ -870,6 +874,11 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     // ------------------------------------------------------------- Common code
 
+    /**
+     * 创建 Processor
+     * 应该是 将tcp/ip 转成 http 协议
+     * @return
+     */
     @SuppressWarnings("deprecation")
     @Override
     protected Processor createProcessor() {

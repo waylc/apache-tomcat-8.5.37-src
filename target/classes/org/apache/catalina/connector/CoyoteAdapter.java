@@ -298,7 +298,7 @@ public class CoyoteAdapter implements Adapter {
     @Override
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
-
+        // 将 Tomcat Request/Response 转成 Servlet Request/Response
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
 
@@ -331,7 +331,7 @@ public class CoyoteAdapter implements Adapter {
         req.getRequestProcessor().setWorkerThreadName(THREAD_NAME.get());
 
         try {
-            // Parse and set Catalina and configuration specific
+            // Parse 解析 and set Catalina and configuration specific
             // request parameters
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
@@ -339,9 +339,11 @@ public class CoyoteAdapter implements Adapter {
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
+                //调用容器 Engine -> Host -> Context -> Wrapper
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }
+            //异步
             if (request.isAsync()) {
                 async = true;
                 ReadListener readListener = req.getReadListener();
