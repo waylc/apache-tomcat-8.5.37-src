@@ -270,7 +270,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             if ( getExecutor() == null ) {
                 createExecutor();
             }
-            //连接限制
+            //初始化连接限制
             initializeConnectionLatch();
 
             // Start poller threads 轮询器启动线程 长度是2
@@ -479,6 +479,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
                 try {
                     //if we have reached max connections, wait
+                    //判断是否达到了最大连接数
                     countUpOrAwaitConnection();
 
                     SocketChannel socket = null;

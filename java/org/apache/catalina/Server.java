@@ -46,6 +46,21 @@ import org.apache.catalina.startup.Catalina;
  *
  * @author Craig R. McClanahan
  */
+
+/**
+ * <Server> //顶层组件,可以包括多个Service
+ *  <Service>//顶层组件,可包含一个Engine,多个连接器
+ *   <Connector>//连接器组件，代表通信接口
+ *   </Connector>
+ *   <Engine>//容器组件，一个Engine处理Service中的所有请求，包含多个Host
+ *    <Host> //容器组件,处理特定的Host下客户请求，可包含多个Context
+ *     <Context> //容器组件，为特定的Web应用处理所有的客户请求
+ *     </Context>
+ *    </Host>
+ *   </Engine>
+ *  </Service>
+ * </Server>
+ */
 public interface Server extends Lifecycle {
 
     // ------------------------------------------------------------- Properties

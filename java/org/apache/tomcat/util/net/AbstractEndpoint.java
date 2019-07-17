@@ -1242,6 +1242,10 @@ public abstract class AbstractEndpoint<S> {
 
     protected abstract Log getLog();
 
+    /**
+     * 设置最大连接数
+     * @return
+     */
     protected LimitLatch initializeConnectionLatch() {
         if (maxConnections==-1) return null;
         if (connectionLimitLatch==null) {

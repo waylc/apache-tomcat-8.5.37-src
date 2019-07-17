@@ -253,6 +253,7 @@ public class StandardContext extends ContainerBase
 
     /**
      * The broadcaster that sends j2ee notifications.
+     * 发送j2ee通知的广播器
      */
     private NotificationBroadcasterSupport broadcaster = null;
 

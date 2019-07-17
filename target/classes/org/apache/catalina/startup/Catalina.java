@@ -52,6 +52,7 @@ import org.xml.sax.SAXParseException;
 
 
 /**
+ * 针对Catalina 启动/关闭 命令行
  * Startup/Shutdown shell program for Catalina.  The following command line
  * options are recognized:
  * <ul>
@@ -669,6 +670,7 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 启动Server
      */
     public void start() {
 

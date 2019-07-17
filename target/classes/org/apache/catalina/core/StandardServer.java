@@ -830,7 +830,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
 
         super.initInternal();
 
-        // Register global String cache
+        // Register global String cache 注册一个字符串缓存
         // Note although the cache is global, if there are multiple Servers
         // present in the JVM (may happen when embedding) then the same cache
         // will be registered under multiple names
@@ -841,12 +841,13 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         factory.setContainer(this);
         onameMBeanFactory = register(factory, "type=MBeanFactory");
 
-        // Register the naming resources
+        // Register the naming resources 注册命名资源
         globalNamingResources.init();
 
         // Populate the extension validator with JARs from common and shared
         // class loaders
         if (getCatalina() != null) {
+            //AppClassLoader
             ClassLoader cl = getCatalina().getParentClassLoader();
             // Walk the class loader hierarchy. Stop at the system class loader.
             // This will add the shared (if present) and common class loaders

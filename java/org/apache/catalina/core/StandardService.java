@@ -422,7 +422,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
                 engine.start();
             }
         }
-
+        //启动线程池
         synchronized (executors) {
             for (Executor executor: executors) {
                 executor.start();
